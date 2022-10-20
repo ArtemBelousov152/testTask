@@ -1,9 +1,16 @@
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-align: center;
 }
 
 .btn {
     display: block;
     margin: 0 auto;
+}
+
+.errorMessage {
+    color: rgb(180, 3, 3);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
 }

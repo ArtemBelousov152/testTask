@@ -1,7 +1,7 @@
 import DocForm from '../docForm/DocForm';
 import DocList from '../docList/DocList';
 import Links from '../links/Links';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useHttp } from '../../hooks/http.hook';
 import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
@@ -15,7 +15,7 @@ function App() {
 
     useEffect(() => {
         setDocLoadingStatus('loading');
-        request('http://localhost:8000/api/docorderlist')
+        request('api/docorderlist')
             .then(res => {
                 setNewDocList(res.data)
                 setFlag(res.flag);
@@ -24,34 +24,35 @@ function App() {
             .catch(() => setDocLoadingStatus('error'));
     },[])
 
-    const onSubmit = (e, request, employee, document) => {
+    const onSubmit = useCallback((e, request, employee, document) => {
         e.preventDefault();
-        console.log('sibmit');
         const data = JSON.stringify({employee, document});
-        request('http://localhost:8000/api/', "POST", data)
+        request('api/', "POST", data)
             .then(res => {
-                setNewDocList(res.data)
+                if(res.data) {
+                    setNewDocList(res.data)
+                }
                 setFlag(res.flag);
             })
-    }
+    },[])
 
     return (
         <Router>
-            <Links/>
             <main className='container'>
-                <Routes>
-                    <Route 
-                        path='/' 
-                        element={<DocForm onSubmit={onSubmit} flag={flag}/>}
-                    />
-                    <Route 
-                        path='/docList'
-                        element={<DocList
-                                     newDocList={newDocList} 
-                                     docLoadingStatus={docLoadingStatus}
-                                />} 
-                    />
-                </Routes>
+            <Links/>
+            <Routes>
+                <Route 
+                    path='/' 
+                    element={<DocForm onSubmit={onSubmit} flag={flag}/>}
+                />
+                <Route 
+                    path='/docList'
+                    element={<DocList
+                                    newDocList={newDocList} 
+                                    docLoadingStatus={docLoadingStatus}
+                            />} 
+                />
+            </Routes>
             </main>
         </Router>
     )

@@ -13,7 +13,7 @@ const DocForm = ({onSubmit, flag}) => {
     
     useEffect(() => {
         setEmployeesLoadingStatus('loading');
-        request('http://localhost:8000/api/employee')
+        request('api/employee')
         .then(res => setEmployees(res))
         .then(() => {setEmployeesLoadingStatus('done')})
         .catch(() => {setEmployeesLoadingStatus('error')});
@@ -30,7 +30,6 @@ const DocForm = ({onSubmit, flag}) => {
         return employee.map(emp => {
             return <option key={uuidv4()}>{emp}</option>
         })
-            
     }
 
     return(
@@ -61,7 +60,8 @@ const DocForm = ({onSubmit, flag}) => {
                     onChange={(e) => setDocument(e.target.value)}  
                     rows="3"></textarea>
             </div>
-            {flag ? <div style={{color: 'red'}}>Вы уже отправляли запрос на этот документ</div> : null}
+            {flag ? <div className="errorMessage">Вы
+                уже отправляли заявку на этот документ, она уже была учтена</div> : null}
             <button className="btn btn-secondary">Отправить</button>
         </form>
         </>

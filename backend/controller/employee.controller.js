@@ -26,7 +26,7 @@ class EmployeeController {
         
         if (haveDoc) {
             getDocBase()
-                .then(data => res.json({data: data.rows, flag: true}));
+                .then(data => res.json({flag: true}));
             return;
         
         } else {
@@ -53,12 +53,12 @@ class EmployeeController {
         const docList = await db.query('SELECT * FROM doclist')
         res.json({data: docList.rows, flag: false});
     }
+
     async getEmployee(req, res) {
         const employeeList = await db.query('SELECT * FROM employee')
         const result = employeeList.rows.map(emp => {
             return emp.name;
         });
-        console.log(employeeList);
         res.json(result);
     }
 }

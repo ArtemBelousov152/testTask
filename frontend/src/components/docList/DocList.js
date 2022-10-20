@@ -23,7 +23,7 @@ const DocList = ({newDocList, docLoadingStatus, flag}) => {
                 return  <tr key={uuidv4()}>
                             <th scope="row">{i + 1}</th>
                             <td>{`Документ ${docname}`}</td>
-                            <td>{`Количество заказов ${docorder}`}</td>
+                            <td>{docorder}</td>
                         </tr>
             }
         })
@@ -31,12 +31,12 @@ const DocList = ({newDocList, docLoadingStatus, flag}) => {
 
     return (
         <>
-            <table class="table table-bordered">
+            <table className="table table-bordered">
                 <thead>
                     <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Название документа</th>
-                    <th scope="col">Количество заказов</th>
+                    <th scope="col">Наименование документа</th>
+                    <th scope="col">Количество заявок</th>
                     </tr>
                 </thead>
                 <tbody>
