@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useHttp } from "../../hooks/http.hook";
 import { v4 as uuidv4 } from 'uuid';
 
-const DocForm = ({onSubmit}) => {
+import './docForm.scss';
+
+const DocForm = ({onSubmit, flag}) => {
     const [employees, setEmployees] = useState([]);
     const [employee, setEmployee] = useState('');
     const [employeesLoadingStatus, setEmployeesLoadingStatus] = useState('');
     const [document, setDocument] = useState('');
-
     const {request} = useHttp();
     
     useEffect(() => {
@@ -33,25 +34,38 @@ const DocForm = ({onSubmit}) => {
     }
 
     return(
+        <>
         <form onSubmit={(e) => {onSubmit(e, request, employee, document)}}>
-            <label htmlFor="name">Выберете сотрудника</label>
-            <select
-             name="name" 
-             id="name"
-             value={employee}
-             onChange={(e) => setEmployee(e.target.value)}>
-                <option>Выберите сотрудника</option>
-                {renderEmployees(employees, employeesLoadingStatus)}
-            </select>
-            <label htmlFor="docOrder">Введите документ</label>
-            <input 
-                type="textArea"
-                name="docOrder"
-                id="docOrder"
-                value={document}
-                onChange={(e) => setDocument(e.target.value)} />
-            <button>Отправить</button>
+            <div className="form-group">
+                <label htmlFor="name">Выберите сотрудника</label>
+                <select 
+                    className="form-control"
+                    name="name" 
+                    id="name"
+                    value={employee}
+                    onChange={(e) => setEmployee(e.target.value)}
+                    >
+                    <option>Выберите сотрудника</option>
+                    {renderEmployees(employees, employeesLoadingStatus)}
+                </select>
+            </div>
+            <div className="form-group">
+                <label htmlFor="docOrder">Введите название документа</label>
+                <textarea
+                    className="form-control"
+                    required
+                    type="textArea"
+                    name="docOrder"
+                    id="docOrder"
+                    value={document}
+                    onChange={(e) => setDocument(e.target.value)}  
+                    rows="3"></textarea>
+            </div>
+            {flag ? <div style={{color: 'red'}}>Вы уже отправляли запрос на этот документ</div> : null}
+            <button className="btn btn-secondary">Отправить</button>
         </form>
+        </>
+        
     )
 }
 

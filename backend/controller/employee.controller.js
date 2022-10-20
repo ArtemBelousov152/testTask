@@ -3,65 +3,62 @@ const db = require('../db')
 class EmployeeController {
 
     async addDocOrder(req, res) {
+        const getDocBase = async () => {
+            const data = await db.query('SELECT * FROM doclist');
+            return data;
+        }
+
         const {employee, document} = req.body;
-        let flag = false;
+        let haveDoc = false;
         const empDoc = await db.query('SELECT name, docName FROM employee WHERE name = $1', [employee]);
 
         const docArray = empDoc.rows[0].docname.split(',')
 
-        const response = await db.query('SELECT * FROM doclist');
-
         if (docArray.length > 1) {
             docArray.forEach(item => {
                 if(item === document) {
-                    flag = true;
+                    haveDoc = true;
                 };
             })
         } else if(docArray[0] === document) {
-            flag = true;
+            haveDoc = true;
         }
-        if (flag) {
-            res.json({response: 'такой документ уже был запрошен вами'});
+        
+        if (haveDoc) {
+            getDocBase()
+                .then(data => res.json({data: data.rows, flag: true}));
             return;
+        
+        } else {
+            const doc = await db.query('SELECT * FROM doclist WHERE docname = $1', [document]);
+            
+            if (doc.rows.length === 0) {
+                await db.query('INSERT INTO doclist (docname, docorder) values ($1, $2) RETURNING *', [document, 1]);
+
+            } else {
+                await db.query(`UPDATE doclist SET docorder = $1 WHERE docname = $2 RETURNING *`, [doc.rows[0].docorder + 1, document]);
+            }
+
+            const oldEmploye = await db.query('SELECT * FROM employee WHERE name = $1', [employee]);
+
+            await db.query('UPDATE employee SET docname = $1 WHERE name = $2 RETURNING *', [`${oldEmploye.rows[0].docname},${document}`, employee]);
+            
+            getDocBase()
+                .then(data => res.json({data: data.rows, flag: false}));
+
         }
-        // } else {
-        //     const doc = await db.query('SELECT * FROM doclist where docname = $1',[document]);
-        //     console.log(doc.rows);
-        //     if (doc.rows.length === 0) {
-        //         await db.query('INSERT INTO doclist (docname, docorder) values ($1, $2) RETURNING *', [document, 1]);
-        //         res.json(response);
-        //         return;
-        //     }
-        //     const addCountDocOrder = await db.query(`UPDATE doclist SET docorder=$1 WHERE docname=$2 RETURNING *`, [response.rows[0].docorder + 1, document]);
-        //     const addEmpDoc = await db.query('INSERT INTO employee SET docname=$1 WHERE name=$2 RETURNING *',[`,${document}`, employee]);
-        //     res.json(await db.query('SELECT * FROM doclist'));
-        // }
-
-
-
-
-        // const response = await (await db.query('SELECT * FROM doclist where docname = $1',[document]));
-
-        // if (response.rows.length > 0) {
-        //     const {docorder} = response.rows[0];
-        //     const newOrder = await db.query(`UPDATE doclist SET docorder=$1 WHERE docname=$2 RETURNING *`, [docorder + 1, document]);
-        //     res.json(await db.query('SELECT * FROM doclist'));
-        //     return;
-        // }
-
-        // const newOrder = await db.query('INSERT INTO doclist (docname, docorder) values ($1, $2) RETURNING *', [document, 1]);
-        // res.json(await db.query('SELECT * FROM doclist'));
     }
 
     async getDocsOrderList(req, res) {
         const docList = await db.query('SELECT * FROM doclist')
-        res.json(docList.rows);
+        res.json({data: docList.rows, flag: false});
     }
     async getEmployee(req, res) {
         const employeeList = await db.query('SELECT * FROM employee')
         const result = employeeList.rows.map(emp => {
             return emp.name;
         });
+        console.log(employeeList);
         res.json(result);
     }
 }

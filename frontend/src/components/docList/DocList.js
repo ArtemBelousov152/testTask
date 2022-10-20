@@ -1,22 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useHttp } from '../../hooks/http.hook';
 import { v4 as uuidv4 } from 'uuid';
 
 import './docList.scss';
 
-const DocList = ({newDocList}) => {
-    const [docList, setDocList] = useState([]);
-    const [docLoadingStatus, setDocLoadingStatus] = useState('');
-    const {request} = useHttp();
-
-    useEffect(() => {
-        setDocLoadingStatus('loading');
-        request('http://localhost:8000/api/docorderlist')
-            .then(res => setDocList(res))
-            .then(() => setDocLoadingStatus('done'))
-            .catch(() => setDocLoadingStatus('error'));
-    },[])
-
+const DocList = ({newDocList, docLoadingStatus, flag}) => {
     const sortDocList = (list) => {
         const sortDocList = list.sort((a, b) => {
             return b.docorder - a.docorder;
@@ -32,26 +18,35 @@ const DocList = ({newDocList}) => {
                 return <option>Ошибка загрузки</option>
         }
 
-        return documents.map(({docname, docorder}) => {
+        return documents.map(({docname, docorder}, i) => {
             if(docname) {
                 return  <tr key={uuidv4()}>
-                            <th>{`Документ ${docname}`}</th>
-                            <th>{`Количество заказов ${docorder}`}</th>
+                            <th scope="row">{i + 1}</th>
+                            <td>{`Документ ${docname}`}</td>
+                            <td>{`Количество заказов ${docorder}`}</td>
                         </tr>
             }
-           
         })
     }
 
     return (
         <>
-        <table border={2}>
-           {newDocList && !newDocList.response ? renderDocList(sortDocList(newDocList.rows), docLoadingStatus) : renderDocList(sortDocList(docList), docLoadingStatus)}
-        </table>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название документа</th>
+                    <th scope="col">Количество заказов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {renderDocList(sortDocList(newDocList), docLoadingStatus)}
+                </tbody>
+            </table>
         </>
+
+        
     )
 }
 
 export default DocList;
-
-console.log(typeof []);
