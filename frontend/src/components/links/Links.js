@@ -8,13 +8,13 @@ const Links = () => {
             <NavLink
                 className="btn btn-primary btn-lg"
                 to="/">
-                Форма отправки
+                Форма для заявки
             </NavLink>
             
             <NavLink
                 className="btn btn-secondary btn-lg"
                 to="/docList">
-                Список документов
+                Сводная таблица
             </NavLink>
         </nav>
     )
