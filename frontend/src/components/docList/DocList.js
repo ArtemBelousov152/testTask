@@ -5,9 +5,8 @@ import './docList.scss';
 const DocList = ({newDocList, docLoadingStatus, flag}) => {
     const sortDocList = (list) => {
         const sortDocList = list.sort((a, b) => {
-            return b.docorder - a.docorder;
+            return b.count - a.count;
         })
-
         return sortDocList;
     }
     const renderDocList = (documents, loadingStatus) => {
@@ -18,12 +17,12 @@ const DocList = ({newDocList, docLoadingStatus, flag}) => {
                 return <option>Ошибка загрузки</option>
         }
 
-        return documents.map(({docname, docorder}, i) => {
+        return documents.map(({docname, count}, i) => {
             if(docname) {
                 return  <tr key={uuidv4()}>
                             <th scope="row">{i + 1}</th>
                             <td>{`Документ ${docname}`}</td>
-                            <td>{docorder}</td>
+                            <td>{count}</td>
                         </tr>
             }
         })

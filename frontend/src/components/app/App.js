@@ -12,13 +12,14 @@ function App() {
     const [flag, setFlag] = useState(false);
     const [docLoadingStatus, setDocLoadingStatus] = useState('');
     const {request} = useHttp();
-
+    
     useEffect(() => {
         setDocLoadingStatus('loading');
         request('api/docorderlist')
             .then(res => {
                 setNewDocList(res.data)
                 setFlag(res.flag);
+                console.log(res);
             })
             .then(() => setDocLoadingStatus('done'))
             .catch(() => setDocLoadingStatus('error'));
